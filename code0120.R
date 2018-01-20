@@ -205,15 +205,9 @@ training<-all_data[ trainIndex,]
 testing<-all_data[-trainIndex,]
 
 #Make a distance matrix
-## set the parameters for mlr
-## define the classfication task 
-WP2 = makeClassifTask(id = "WP2", data = WP2Train, target = "DON")
-
 ## cross validation
 ## 10-fold cross-validation
 rdesc = makeResampleDesc("CV", iters = 10,stratify = TRUE)
-rin = makeResampleInstance(rdesc, task = WP2)
-
 ## Classification tree, set it up for predicting probabilities
 classif.lrn = makeLearner("classif.randomForest", predict.type = "prob", fix.factors.prediction = TRUE)
 
@@ -228,15 +222,12 @@ para_rf = makeParamSet(
 ctrl = makeTuneControlIrace(maxExperiments = 200L)
 
 ## tune the parameters for rf and xgboost
-res_rf =mlr::tuneParams(classif.lrn, WP2, resampling=rdesc, par.set = para_rf, control = ctrl, 
-                        show.info = FALSE, measures = acc)
-
 model_build <- function(dataset, n_target) {
   #set.seed(719)
   ## define the regression task for DON 
-  WP3_target = makeRegrTask(id = "WP3_target", data = dataset, target = n_target)
+  WP3_target = makeClassifTask(id = "WP3_target", data = dataset, target = n_target)
   rin = makeResampleInstance(rdesc, task = WP3_target)
-  res_rf = mlr::tuneParams(reg_rf, WP3_target, resampling = rdesc, par.set = para_rf, control = ctrl,
+  res_rf = mlr::tuneParams(classif.lrn, WP3_target, resampling = rdesc, par.set = para_rf, control = ctrl,
                            show.info = FALSE)
   lrn_rf = setHyperPars(reg_rf, par.vals = res_rf$x)
   ## train the final model 
