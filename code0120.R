@@ -185,18 +185,19 @@ Distance_GWC@data@names<-"Distance_GWC"
 landscapes<-stack(Soil,Veg,Land_use,Cat,depth_k,water_distance,Distance_GWC)
 names(landscapes) <- c("Soil", "Veg", "Landuse","Catchment", "GW_depth", "Distance","Distance_GWC")
 
+
 ## load the data 
 set.seed(666)
 
 all_results<-data.frame()
 
-seed.list<-sample(1:1000,300,replace =F)
+
 all_data<-read.csv("~/WP2/data/all_data1127.csv",header = T)
 
 results<-data.frame()
 
-i=0.5
-j=2.5
+a1=0.5
+a2=2.5
 
 set.seed(91)
 trainIndex <- createDataPartition(all_data$DON, p = .75, list = FALSE, times = 1)
@@ -229,7 +230,7 @@ model_build <- function(dataset, n_target) {
   rin = makeResampleInstance(rdesc, task = WP3_target)
   res_rf = mlr::tuneParams(classif.lrn, WP3_target, resampling = rdesc, par.set = para_rf, control = ctrl,
                            show.info = FALSE)
-  lrn_rf = setHyperPars(reg_rf, par.vals = res_rf$x)
+  lrn_rf = setHyperPars(classif.lrn, par.vals = res_rf$x)
   ## train the final model 
   #set.seed(719)
   rf <- mlr::train(lrn_rf, WP3_target)
@@ -270,8 +271,8 @@ model_build <- function(dataset, n_target) {
   landscape_train <- capture_zone_land(training_df)
   landscape_test <- capture_zone_land(testing_df)
   
-  M2_train <- cbind(as.data.frame(landscape_train), training_df@data[c("DON","s1","s2")])
-  M2_test <- cbind(as.data.frame(landscape_test), testing_df@data[c("DON","s1","s2")])
+  M2_train <- cbind(as.data.frame(landscape_train), training_df@data[c("DON","Collect_Month","date_","DOC","NOx","NH4")])
+  M2_test <- cbind(as.data.frame(landscape_test), testing_df@data[c("DON","Collect_Month","date_","DOC","NOx","NH4")])
   
   names(M2_train) <- colnames(M2_test)
   
@@ -303,7 +304,7 @@ model_build <- function(dataset, n_target) {
 #  M2_train$DON<-log10(M2_train$DON)
 #  M2_test$DON<-log10(M2_test$DON)
   
-  for(i in c("GW_depth","Distance","s1")) {
+  for(i in c("GW_depth","Distance","date_","DOC","NH4")) {
     
     min_train<-min(M2_train[,i])
     max_train<-max(M2_train[,i])
@@ -313,7 +314,7 @@ model_build <- function(dataset, n_target) {
 
   }
   
-  for(i in c("Distance_GWC","slope","s2")){
+  for(i in c("Distance_GWC","Collect_Month","NOx")){
     
     min_train<-min(M2_train[,i])
     max_train<-max(M2_train[,i])
@@ -323,14 +324,14 @@ model_build <- function(dataset, n_target) {
 
   }
 
-  set.seed(seeds)
-  WP2Train<-M2_train[,-c(4,6,7)]
-  WP2Test<-M2_test[,-c(4,6,7)]
+
+  WP2Train<-M2_train[,-c(4)]
+  WP2Test<-M2_test[,-c(4)]
   
-  rf_DON_m2 <- model_build2(WP2Train,"DON")
+  rf_DON_m2 <- model_build(WP2Train,"DON")
 
 ## test in testing set
-test_rf = predict(rf, newdata = WP2Test)
+test_rf = predict(rf_DON_m2, newdata = WP2Test)
 ## ConfusionMatrix
 print(calculateConfusionMatrix(test_rf))
 ## get the prediction performance
