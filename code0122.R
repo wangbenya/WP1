@@ -20,7 +20,7 @@ library(automap)
 library(reshape2)
 
 ## start the parallel 
-parallelStartSocket(5)
+parallelStartSocket(16)
 
 WGS84 <- CRS("+proj=utm +zone=50 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 
@@ -211,7 +211,6 @@ rdesc = makeResampleDesc("CV", iters = 10,stratify = TRUE)
 ## Classification tree, set it up for predicting probabilities
 classif.lrn = makeLearner("classif.randomForest", predict.type = "prob", fix.factors.prediction = TRUE)
 
-
 ## set the model parameters for random forest
 para_rf = makeParamSet(
   makeIntegerParam("ntree", lower = 400, upper = 1000),
@@ -250,8 +249,11 @@ model_build <- function(dataset, n_target) {
   testing_df<-add_S1S2(testing_df)
   
   ## M2, using RF to predict the DON
-  a=700
-  b=1400
+  for (aa in seq(100,1000,100)){
+    for (bb in seq(100,1500,100)){
+  
+  a=aa
+  b=bb
   capture_zone_land<-function(df){
     num<-nrow(df)
     landscape_data<-data.frame()
@@ -336,10 +338,13 @@ print(calculateConfusionMatrix(test_rf))
 ## get the prediction performance
 train_rf = predict(rf_DON_m2, newdata = WP2Train)
 
-performance(test_rf,measures=acc)[1]
-performance(train_rf,measures=acc)[1]
+acc_test<-performance(test_rf,measures=acc)[1]
+acc_train<-performance(train_rf,measures=acc)[1]
 
+sing_acc<-data.frame(aa,bb,acc_test,acc_train)
+all_results<-rbind(all_results,sing_acc)
+print(all_results)
+}}
 
-
-
+print(all_results)
   
