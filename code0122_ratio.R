@@ -20,7 +20,7 @@ library(automap)
 library(reshape2)
 
 ## start the parallel 
-parallelStartSocket(5)
+parallelStartSocket(16)
 
 WGS84 <- CRS("+proj=utm +zone=50 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 
