@@ -191,7 +191,7 @@ names(landscapes) <- c("Soil", "Veg", "Landuse","Catchment", "GW_depth", "Distan
 set.seed(666)
 
 all_results<-data.frame()
-all_data<-read.csv("/home/ubuntu/WP2/data/all_data1127.csv",header = T)
+all_data<-read.csv("~/WP2/data/all_data1127.csv",header = T)
 
 results<-data.frame()
 
@@ -300,8 +300,8 @@ model_build <- function(dataset, n_target) {
    M2_train<-reclass(M2_train,a1,a2)
    M2_test<-reclass(M2_test,a1,a2)
 
-   M2_train$Collect_Month<-factor(M2_train$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
-   M2_test$Collect_Month<-factor(M2_test$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
+  # M2_train$Collect_Month<-factor(M2_train$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
+   #M2_test$Collect_Month<-factor(M2_test$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
    
 #  M2_train$DON<-log10(M2_train$DON)
 #  M2_test$DON<-log10(M2_test$DON)
