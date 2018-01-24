@@ -268,8 +268,8 @@ model_build <- function(dataset, n_target) {
   landscape_train <- capture_zone_land(training_df)
   landscape_test <- capture_zone_land(testing_df)
   
-  M2_train <- cbind(as.data.frame(landscape_train), training_df@data[c("DON","date_","Collect_Month")])
-  M2_test <- cbind(as.data.frame(landscape_test), testing_df@data[c("DON","date_","Collect_Month")])
+  M2_train <- cbind(as.data.frame(landscape_train), training_df@data[c("DON","date_","Collect_Month","DOC")])
+  M2_test <- cbind(as.data.frame(landscape_test), testing_df@data[c("DON","date_","Collect_Month","DOC")])
   
   names(M2_train) <- colnames(M2_test)
   
