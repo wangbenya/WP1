@@ -305,25 +305,25 @@ model_build <- function(dataset, n_target) {
 #  M2_train$DON<-log10(M2_train$DON)
 #  M2_test$DON<-log10(M2_test$DON)
   
-  #for(i in c("GW_depth","Distance","date_","DOC")) {
+  for(i in c("GW_depth","Distance","date_")) {
     
-  #  min_train<-min(M2_train[,i])
-  #  max_train<-max(M2_train[,i])
+    min_train<-min(M2_train[,i])
+    max_train<-max(M2_train[,i])
     
- #   M2_train[,i]<-(M2_train[,i]-min_train)/(max_train-min_train)
- #   M2_test[,i]<-(M2_test[,i]-min_train)/(max_train-min_train)
+   M2_train[,i]<-(M2_train[,i]-min_train)/(max_train-min_train)
+    M2_test[,i]<-(M2_test[,i]-min_train)/(max_train-min_train)
 
-#  }
+  }
   
- # for(i in c("Distance_GWC","Collect_Month")){
+  for(i in c("Distance_GWC")){
     
- #   min_train<-min(M2_train[,i])
- #   max_train<-max(M2_train[,i])
+    min_train<-min(M2_train[,i])
+    max_train<-max(M2_train[,i])
     
- #   M2_train[,i]<-(max_train-M2_train[,i])/(max_train-min_train)
-  #  M2_test[,i]<-(max_train-M2_test[,i])/(max_train-min_train)
+    M2_train[,i]<-(max_train-M2_train[,i])/(max_train-min_train)
+    M2_test[,i]<-(max_train-M2_test[,i])/(max_train-min_train)
 
-#  }
+}
 
   WP2Train<-M2_train[,-c(4)]
   WP2Test<-M2_test[,-c(4)]
