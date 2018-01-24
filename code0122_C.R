@@ -207,7 +207,7 @@ testing<-all_data[-trainIndex,]
 #Make a distance matrix
 ## cross validation
 ## 10-fold cross-validation
-rdesc = makeResampleDesc("CV", iters = 10)
+rdesc = makeResampleDesc("CV", iters = 5)
 ## Classification tree, set it up for predicting probabilities
 reg_rf = makeLearner("regr.randomForest")
 
@@ -215,11 +215,11 @@ reg_rf = makeLearner("regr.randomForest")
 para_rf = makeParamSet(
   makeIntegerParam("ntree", lower = 400, upper = 1000),
   makeIntegerParam("mtry", lower = 2, upper = 7),
-  makeIntegerParam("nodesize", lower = 1, upper = 6)
+  makeIntegerParam("nodesize", lower = 5, upper = 10)
 )
 
 ## define the search stratgy
-ctrl = makeTuneControlIrace(maxExperiments = 200L)
+ctrl = makeTuneControlIrace(maxExperiments = 500L)
 
 model_build <- function(dataset, n_target) {
   #set.seed(719)
