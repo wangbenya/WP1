@@ -194,10 +194,9 @@ all_results<-data.frame()
 all_points<-read.csv("~/WP2/data/all_data1127.csv",header = T)
 
 results<-data.frame()
-for (a1 in c(0.5,0.6)){
-  for (a2 in c(0.8,0.9)){
-#a1=0.5
-#a2=2.5
+
+a1=0.6
+a2=0.9
 
 set.seed(91)
 trainIndex <- createDataPartition(all_data$DON, p = .75, list = FALSE, times = 1)
@@ -271,8 +270,8 @@ model_build <- function(dataset, n_target) {
   landscape_train <- capture_zone_land(training_df)
   landscape_test <- capture_zone_land(testing_df)
   
-  M2_train <- cbind(as.data.frame(landscape_train), training_df@data[c("DON_ratio","Collect_Month","date_","DOC")])
-  M2_test <- cbind(as.data.frame(landscape_test), testing_df@data[c("DON_ratio","Collect_Month","date_","DOC")])
+  M2_train <- cbind(as.data.frame(landscape_train), training_df@data[c("DON_ratio","date_","DOC")])
+  M2_test <- cbind(as.data.frame(landscape_test), testing_df@data[c("DON_ratio","date_","DOC")])
   
   names(M2_train) <- colnames(M2_test)
   
@@ -301,28 +300,31 @@ model_build <- function(dataset, n_target) {
    M2_train<-reclass(M2_train,a1,a2)
    M2_test<-reclass(M2_test,a1,a2)
 
+   M2_train$Collect_Month<-factor(M2_train$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
+   M2_test$Collect_Month<-factor(M2_test$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
+   
 #  M2_train$DON<-log10(M2_train$DON)
 #  M2_test$DON<-log10(M2_test$DON)
   
-  for(i in c("GW_depth","Distance","date_","DOC")) {
+  #for(i in c("GW_depth","Distance","date_","DOC")) {
     
-    min_train<-min(M2_train[,i])
-    max_train<-max(M2_train[,i])
+   # min_train<-min(M2_train[,i])
+   # max_train<-max(M2_train[,i])
     
-    M2_train[,i]<-(M2_train[,i]-min_train)/(max_train-min_train)
-    M2_test[,i]<-(M2_test[,i]-min_train)/(max_train-min_train)
+   # M2_train[,i]<-(M2_train[,i]-min_train)/(max_train-min_train)
+  #  M2_test[,i]<-(M2_test[,i]-min_train)/(max_train-min_train)
 
-  }
+ # }
   
-  for(i in c("Distance_GWC","Collect_Month")){
+  #for(i in c("Distance_GWC","Collect_Month")){
     
-    min_train<-min(M2_train[,i])
-    max_train<-max(M2_train[,i])
+ #   min_train<-min(M2_train[,i])
+  #  max_train<-max(M2_train[,i])
     
-    M2_train[,i]<-(max_train-M2_train[,i])/(max_train-min_train)
-    M2_test[,i]<-(max_train-M2_test[,i])/(max_train-min_train)
+  #  M2_train[,i]<-(max_train-M2_train[,i])/(max_train-min_train)
+   # M2_test[,i]<-(max_train-M2_test[,i])/(max_train-min_train)
 
-  }
+ # }
 
   WP2Train<-M2_train[,-c(4)]
   WP2Test<-M2_test[,-c(4)]
@@ -342,6 +344,3 @@ acc_train<-performance(train_rf,measures=acc)[1]
 sing_acc<-data.frame(a1,a2,acc_test,acc_train)
 all_results<-rbind(all_results,sing_acc)
 print(all_results)
-
-print(all_results)
-  }}
