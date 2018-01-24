@@ -209,7 +209,7 @@ testing<-all_data[-trainIndex,]
 ## 10-fold cross-validation
 rdesc = makeResampleDesc("CV", iters = 10,stratify = TRUE)
 ## Classification tree, set it up for predicting probabilities
-classif.lrn = makeLearner("classif.randomForest", predict.type = "prob", fix.factors.prediction = TRUE)
+reg_rf = makeLearner("regr.randomForest")
 
 ## set the model parameters for random forest
 para_rf = makeParamSet(
@@ -221,21 +221,19 @@ para_rf = makeParamSet(
 ## define the search stratgy
 ctrl = makeTuneControlIrace(maxExperiments = 200L)
 
-## tune the parameters for rf and xgboost
 model_build <- function(dataset, n_target) {
   #set.seed(719)
   ## define the regression task for DON 
-  WP3_target = makeClassifTask(id = "WP3_target", data = dataset, target = n_target)
+  WP3_target = makeRegrTask(id = "WP3_target", data = dataset, target = n_target)
   rin = makeResampleInstance(rdesc, task = WP3_target)
-  res_rf = mlr::tuneParams(classif.lrn, WP3_target, resampling = rdesc, par.set = para_rf, control = ctrl,
+  res_rf = mlr::tuneParams(reg_rf, WP3_target, resampling = rdesc, par.set = para_rf, control = ctrl,
                            show.info = FALSE)
-  lrn_rf = setHyperPars(classif.lrn, par.vals = res_rf$x)
+  lrn_rf = setHyperPars(reg_rf, par.vals = res_rf$x)
   ## train the final model 
   #set.seed(719)
   rf <- mlr::train(lrn_rf, WP3_target)
   return(rf)
 }
-
   ## load the point data 
   training_df <- read_pointDataframes(training)
   testing_df <-  read_pointDataframes(testing) 
@@ -297,11 +295,11 @@ model_build <- function(dataset, n_target) {
     M2_test[,ii]<-factor(M2_test[,ii],levels = levels(M2_train[,ii]))
     }
   
-   M2_train<-reclass(M2_train,a1,a2)
-   M2_test<-reclass(M2_test,a1,a2)
+   #M2_train<-reclass(M2_train,a1,a2)
+   #M2_test<-reclass(M2_test,a1,a2)
    
-   M2_train$Collect_Month<-factor(M2_train$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
-   M2_test$Collect_Month<-factor(M2_test$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
+#   M2_train$Collect_Month<-factor(M2_train$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
+ #  M2_test$Collect_Month<-factor(M2_test$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
    
    
 #  M2_train$DON<-log10(M2_train$DON)
@@ -335,54 +333,12 @@ model_build <- function(dataset, n_target) {
 ## test in testing set
 test_rf = predict(rf_DON_m2, newdata = WP2Test)
 ## ConfusionMatrix
-print(calculateConfusionMatrix(test_rf))
+#print(calculateConfusionMatrix(test_rf))
 ## get the prediction performance
 train_rf = predict(rf_DON_m2, newdata = WP2Train)
 
-acc_test<-performance(test_rf,measures=acc)[1]
-acc_train<-performance(train_rf,measures=acc)[1]
-
-sing_acc<-data.frame(acc_test,acc_train)
-all_results<-rbind(all_results,sing_acc)
-print(all_results)
-
-
-predrf=function(M,data) # the PRED function
-{ return (as.matrix(predict(M,newdata=data)$data[,2:4]))}
-
-## 1D-SA
-I=Importance(rf_DON_m2,WP2Train,method="1D-SA",PRED=predrf,outindex=7) 
-print(round(I$imp,digits=2))
-L=list(runs=1,sen=t(I$imp),sresponses=I$sresponses)
-mgraph(L,graph="IMP",leg=names(WP2Train),col="gray",Grid=10)
-
-
-
-
-vecplot(I,graph="VEC",xval=10,Grid=10,TC=1)
-
-
-vecplot(I,xval=c(1),pch=c(1),Grid=10,
-        leg=list(pos="bottomright",leg=c("x1"))) # all x1, x2 and x3 VEC curves
-
-vecplot(I,graph="VEC",xval=4,cex=1.2,TC=3,
-        main="VEC curve for x2 influence on y (class B)",xlab="x2")
-
-vecplot(I,graph="VEC",TC=c(1),xval=c(4))
-vecplot(I,graph="VEC",TC=c(2),xval=c(4))
-vecplot(I,graph="VEC",TC=c(3),xval=c(4))
-
-
-I2=Importance(rf_DON_m2,WP2Train,method="1D-SA",PRED=predrf,outindex=7)
-
-
-
-cm2=agg_matrix_imp(I2)
-fcm2=cmatrixplot(cm2,threshold=c(0.1,0.1))
-
-vecplot(I2,graph="VECC",xval=c(1,2))
-
-
+print(postResample(test_rf$data$response,test_rf$data$truth))
+print(postResample(train_rf$data$response,train_rf$data$truth))
 
 
 
