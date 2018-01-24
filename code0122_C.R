@@ -270,8 +270,8 @@ model_build <- function(dataset, n_target) {
   landscape_train <- capture_zone_land(training_df)
   landscape_test <- capture_zone_land(testing_df)
   
-  M2_train <- cbind(as.data.frame(landscape_train), training_df@data[c("DON","date_","DOC")])
-  M2_test <- cbind(as.data.frame(landscape_test), testing_df@data[c("DON","date_","DOC")])
+  M2_train <- cbind(as.data.frame(landscape_train), training_df@data[c("DON","date_","Collect_Month")])
+  M2_test <- cbind(as.data.frame(landscape_test), testing_df@data[c("DON","date_","Collect_Month")])
   
   names(M2_train) <- colnames(M2_test)
   
@@ -300,8 +300,8 @@ model_build <- function(dataset, n_target) {
    M2_train<-reclass(M2_train,a1,a2)
    M2_test<-reclass(M2_test,a1,a2)
    
-   #M2_train$Collect_Month<-factor(M2_train$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
-   #M2_test$Collect_Month<-factor(M2_test$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
+   M2_train$Collect_Month<-factor(M2_train$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
+   M2_test$Collect_Month<-factor(M2_test$Collect_Month,levels=c("1","2","3","4","5","6","7","8","9","10","11"))
    
    
 #  M2_train$DON<-log10(M2_train$DON)
