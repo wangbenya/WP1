@@ -191,7 +191,7 @@ names(landscapes) <- c("Soil", "Veg", "Landuse","Catchment", "GW_depth", "Distan
 set.seed(666)
 
 all_results<-data.frame()
-all_points<-read.csv("/home/ubuntu/WP2/data/all_data1127.csv",header = T)
+all_data<-read.csv("/home/ubuntu/WP2/data/all_data1127.csv",header = T)
 
 results<-data.frame()
 
