@@ -207,7 +207,7 @@ testing<-all_data[-trainIndex,]
 #Make a distance matrix
 ## cross validation
 ## 10-fold cross-validation
-rdesc = makeResampleDesc("CV", iters = 10,stratify = TRUE)
+rdesc = makeResampleDesc("CV", iters = 10)
 ## Classification tree, set it up for predicting probabilities
 reg_rf = makeLearner("regr.randomForest")
 
